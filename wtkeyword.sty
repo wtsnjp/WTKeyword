@@ -4,8 +4,9 @@
 
 %%%% package declaration
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{wtkeyword}[2016/01/22 v0.0]
+\ProvidesPackage{wtkeyword}[2016/03/07 dev]
 \def\wtkw@pkgname{wtkeyword}
+\RequirePackage{xkeyval}
 
 %%%% error messages
 \def\wtkw@warn{\PackageWarningNoLine\wtkw@pkgname}
@@ -17,7 +18,6 @@
 \newif\if@wtkw@first@
 
 %%%% key-value settings
-\RequirePackage{keyval}
 \define@key{wtkw}{read}{\def\wtkw@read{#1}}
 \define@key{wtkw}{index}{\def\wtkw@index{#1}}
 % \define@key{wtkw}{id}{\def\wtkw@read{#1}}
@@ -28,7 +28,10 @@
 \def\firstkeywordfont{\keywordfont}
 \def\starkeywordfont{}
 
-%%%% utilities
+%%%% utility
+\def\wtkw@name@def#1{\expandafter\def\csname #1\endcsname}
+\def\wtkw@name@edef#1{\expandafter\edef\csname #1\endcsname}
+\def\wtkw@name@use#1{\csname #1\endcsname}
 \def\wtkw@if@option@exist{\@ifnextchar[}
 \def\wtkw@empty{\@empty}
 

@@ -18,10 +18,10 @@
 \newif\if@wtkw@first@
 
 %%%% key-value settings
-\define@key{wtkw}{read}{\def\wtkw@read{#1}}
-\define@key{wtkw}{index}{\def\wtkw@index{#1}}
-% \define@key{wtkw}{id}{\def\wtkw@read{#1}}
-\define@key{wtkw}{ruby}[\@empty]{\@wtkw@ruby@true\def\wtkw@ruby{#1}}
+\define@key[wtkw]{keyword}{read}{\def\wtkw@read{#1}}
+\define@key[wtkw]{keyword}{index}{\def\wtkw@index{#1}}
+\define@key[wtkw]{keyword}{id}{\def\wtkw@read{#1}}
+\define@key[wtkw]{keyword}{ruby}[\@empty]{\@wtkw@ruby@true\def\wtkw@ruby{#1}}
 
 %%%% fonts
 \def\keywordfont{\bfseries}
@@ -49,9 +49,9 @@
 \def\wtkw@setkeys[#1]{%
   \@ifnextchar"{\wtkw@@setkeys}{\wtkw@@@setkeys}#1\wtkw@nil}
 \def\wtkw@@setkeys"#1"#2\wtkw@nil{%
-  \setkeys{wtkw}{read=#1#2}\wtkw@@keyword}
+  \setkeys[wtkw]{keyword}{read=#1#2}\wtkw@@keyword}
 \def\wtkw@@@setkeys#1\wtkw@nil{%
-  \setkeys{wtkw}{#1}\wtkw@@keyword}
+  \setkeys[wtkw]{keyword}{#1}\wtkw@@keyword}
 \def\wtkw@@keyword#1{%
   \@ifundefined{wtkw@#1@read}
     {\@wtkw@first@true

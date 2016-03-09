@@ -1,0 +1,45 @@
+\documentclass[a4paper]{article}
+
+\usepackage{enumitem}
+\usepackage{shortvrb}
+\MakeShortVerb{\|}
+\newcommand{\PkgName}{\textsf{WTKeyword}}
+\newcommand{\Meta}[1]{$\langle$\mbox{}\textit{#1}\mbox{}$\rangle$}
+\newenvironment{syntax}{\begin{quote}\small}{\end{quote}}
+
+\title{{\PkgName} Package (v0.2)}
+\author{Watson}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+WT series collects macros which author frequently use to create {\LaTeX} documents.
+{\PkgName} package is a part of this WT Series that
+
+{\LaTeXe} on any kind of {\TeX} engine is supported, but \textsf{xkeyval} package is required.
+\end{abstract}
+
+\section{System Requirements}
+
+System requirements of {\PkgName} are shown bellow:
+%
+\begin{itemize}
+\item {\TeX} engine: any engine
+\item {\TeX} format: \LaTeXe
+\item Document class: any class
+\item Required package: \textsf{xkeyval}
+\end{itemize}
+
+\section{Loading the {\PkgName} Package}
+
+To use {\PkgName} package, load \texttt{wtkeyword.sty} file with |\usepackage| command in
+preamble. No package option is available.
+%
+\begin{syntax}
+|\usepackage{wtkeyword}|
+\end{syntax}
+
+
+\end{document}

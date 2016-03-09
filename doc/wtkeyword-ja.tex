@@ -1,0 +1,46 @@
+\documentclass[a4paper,uplatex]{jsarticle}
+
+\usepackage{otf}
+\usepackage{enumitem}
+\usepackage{shortvrb}
+\MakeShortVerb{\|}
+\newcommand{\PkgName}{\textsf{WTKeyword}}
+\newcommand{\Meta}[1]{$\langle$\mbox{}\textit{#1}\mbox{}$\rangle$}
+\newenvironment{syntax}{\begin{quote}\small}{\end{quote}}
+
+\title{\PkgName パッケージ (v0.2)}
+\author{ワトソン}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+WTシリーズは著者が\LaTeX 文書作成にあたってよく利用するマクロを集めたものである．
+\PkgName パッケージはこのWTシリーズを構成するパッケージの1つであり，
+
+サポート対象は任意の\TeX エンジンと\LaTeXe の組み合わせで，動作には\textsf{xkeyval}
+パッケージが必要である．
+\end{abstract}
+
+\section{動作要件}
+
+\PkgName パッケージの動作要件は以下の通りである．
+%
+\begin{itemize}
+\item \TeX エンジン：任意
+\item \TeX フォーマット：\LaTeXe
+\item ドキュメントクラス：任意
+\item 依存パッケージ：\textsf{xkeyval}
+\end{itemize}
+
+\section{パッケージ読み込み}
+
+読み込みには |\usepackage| 命令を用いる．オプションは存在しない．
+%
+\begin{syntax}
+|\usepackage{wtkeyword}|
+\end{syntax}
+
+
+\end{document}

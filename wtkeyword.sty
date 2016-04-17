@@ -18,8 +18,11 @@
 \newif\if@wtkw@first@
 
 %%%% key-value settings
-\define@cmdkey[wtkw]{keyword}[wtrf@temp@]{read,index,id}
-\define@key[wtkw]{keyword}{ruby}[\@empty]{\@wtkw@ruby@true\def\wtkw@ruby{#1}}
+\define@cmdkeys[wtkw]{index@sp}[wtrf@temp@]{id,num}
+\define@cmdkeys[wtkw]{index}[wtrf@temp@]{index,sup}
+\define@key[wtkw]{index}{ruby}[\@empty]{\@wtkw@ruby@true\def\wtkw@ruby{#1}}
+\define@key[wtkw]{index}{full}{}
+\define@key[wtkw]{index}{noindex}[\@empty]{}
 
 %%%% fonts
 \def\keywordfont{\bfseries}

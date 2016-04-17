@@ -13,21 +13,25 @@
 \def\wtkw@error{\PackageError\wtkw@pkgname}
 
 %%%% new ifs
-\newif\if@wtkw@ruby@\@wtkw@ruby@false
-\newif\if@wtkw@use@font@
-\newif\if@wtkw@first@
+\newif\if@wtkw@use@shortcut@
+%\newif\if@wtkw@ruby@\@wtkw@ruby@false
+%\newif\if@wtkw@use@font@
+%\newif\if@wtkw@first@
 
-%%%% key-value settings
-\define@cmdkeys[wtkw]{index@sp}[wtrf@temp@]{id,num}
+%%%% package options
+\DeclareOption{shortcut}{\@wtrf@use@shortcut@true}
+\DeclareOption{noshortcut}{\@wtrf@use@shortcut@false}
+\ExecuteOptions{shortcut}
+\ProcessOptions\relax
+
+%%%% key-value settings for index families
+\define@cmdkeys[wtkw]{index@sp}[wtrf@temp@]{id,opt}
 \define@cmdkeys[wtkw]{index}[wtrf@temp@]{index,sup}
 \define@key[wtkw]{index}{ruby}[\@empty]{\@wtkw@ruby@true\def\wtkw@ruby{#1}}
 \define@key[wtkw]{index}{full}{}
 \define@key[wtkw]{index}{noindex}[\@empty]{}
 
-%%%% fonts
-\def\keywordfont{\bfseries}
-\def\firstkeywordfont{\keywordfont}
-\def\starkeywordfont{}
+%%%% key-value settings for style family
 
 %%%% utility
 \def\wtkw@name@def#1{\expandafter\def\csname #1\endcsname}
@@ -37,7 +41,8 @@
 \def\wtkw@empty{\@empty}
 
 %%%% keyword
-\def\keyword{%
+\def\keyword{\protect\wtkw@keyword@pre}
+\def\wtrf@keyword@pre{%
   \let\wtkw@read\@empty
   \let\wtkw@index\@empty
   \@ifstar
@@ -82,5 +87,12 @@
       \fi
     \else #1\fi
   \egroup\@wtkw@ruby@false}
+
+%%%% define shortcut
+\if@wtkw@use@shortcut@
+  \let\kw\keyword
+  \let\setkwstyle\setkeywordstyle
+  \let\defkw\defkeyword
+\fi
 
 %% EOF

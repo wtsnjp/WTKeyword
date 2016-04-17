@@ -7,7 +7,7 @@ WTKeyword package supports you to make index with LaTeX2e. This package is a par
 * TeX format: LaTeX2e
 * TeX engine: any engine
 * Document class: any class
-* Prerequisite package: xkeyval
+* Prerequisite package: makeidx, xkeyval
 
 ## Installation
 

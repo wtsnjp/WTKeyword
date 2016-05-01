@@ -42,9 +42,15 @@
 %%%% define utility commands
 \def\wtkw@name@def#1{\expandafter\def\csname #1\endcsname}
 \def\wtkw@name@edef#1{\expandafter\edef\csname #1\endcsname}
+\def\wtkw@name@xdef#1{\expandafter\xdef\csname #1\endcsname}
 \def\wtkw@name@use#1{\csname #1\endcsname}
 \def\wtkw@if@option@exist{\@ifnextchar[}
 \def\wtkw@empty{\@empty}
+
+%%%% write index information to aux file
+\def\wtkw@write@aux#1{%
+  \immediate\write\@auxout{%
+    \string\wtkw@name@xdef{wtkw@#1@index}{}}}
 
 %%%% define \keyword command
 \def\keyword{\protect\wtkw@keyword@pre}

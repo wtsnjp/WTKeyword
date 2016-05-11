@@ -21,22 +21,22 @@
 %\newif\if@wtkw@first@
 
 %%%% package options
-\DeclareOption{shortcut}{\@wtrf@use@shortcut@true}
-\DeclareOption{noshortcut}{\@wtrf@use@shortcut@false}
+\DeclareOption{shortcut}{\@wtkw@use@shortcut@true}
+\DeclareOption{noshortcut}{\@wtkw@use@shortcut@false}
 \DeclareOption{index}{\@wtkw@use@index@true}
 \DeclareOption{noindex}{\@wtkw@use@index@false}
 \ExecuteOptions{index,shortcut}
 \ProcessOptions\relax
 
 %%%% key-value settings for index families
-\define@cmdkeys[wtkw]{index@sp}[wtrf@temp@]{id,opt}
-\define@cmdkeys[wtkw]{index}[wtrf@temp@]{index,sup}
-\define@key[wtkw]{index}{full}{\@wtkw@full@index@false\def\wtkw@temp@full{#1}}
+\define@cmdkeys[wtkw]{index@sp}[wtkw@temp@]{id,opt}
+\define@cmdkeys[wtkw]{index}[wtkw@temp@]{index,read,sup}
+\define@key[wtkw]{index}{full}{\@wtkw@full@index@true\def\wtkw@temp@full{#1}}
 \define@key[wtkw]{index}{noindex}[\@empty]{\@wtkw@make@index@true}
 
 %%%% key-value settings for style family
-\define@key[wtkw]{style}{kwcmd}{\wtrf@name@def{wtkw@kwcmd}##1{#1}}%
-\define@key[wtkw]{style}{rubycmd}{\wtrf@name@def{wtkw@rubycmd}##1{#1}}%
+\define@key[wtkw]{style}{kwcmd}{\wtkw@name@def{wtkw@kwcmd}##1{#1}}%
+\define@key[wtkw]{style}{rubycmd}{\wtkw@name@def{wtkw@rubycmd}##1{#1}}%
 \define@key[wtkw]{style}{ruby}[\@empty]{\@wtkw@ruby@true\def\wtkw@temp@ruby{#1}}
 
 %%%% define utility commands
@@ -52,55 +52,35 @@
   \immediate\write\@auxout{%
     \string\wtkw@name@xdef{wtkw@#1@index}{}}}
 
+%%%% setkeys and syntax sugar
+\def\wtkw@setkeys#1{\setkeys[wtkw]{index@sp,index,style}{#1}}
+\def\wtkw@not@syntax@sugar#1\@nil{}
+\def\wtkw@syntax@sugara"#1"#2\@nil{\def\wtkw@member{read=#1}}
+\def\wtkw@syntax@sugar@a{\@ifnextchar"{\wtkw@syntax@sugara}{\wtkw@not@syntax@sugar}}
+\def\wtkw@syntax@sugarb|#1\@nil{\def\wtkw@member{opt=#1}}
+\def\wtkw@syntax@sugar@b{\@ifnextchar|{\wtkw@syntax@sugarb}{\wtkw@not@syntax@sugar}}
+
 %%%% define \keyword command
 \def\keyword{\protect\wtkw@keyword@pre}
-\def\wtrf@keyword@pre{%
+\def\wtkw@keyword@pre{%
   \let\wtkw@read\@empty
   \let\wtkw@index\@empty
   \@ifstar
-    {\@wtkw@use@font@false\wtkw@keyword}%
-    {\@wtkw@use@font@true\wtkw@keyword}}
-\def\wtkw@keyword{%
+    {\@wtkw@use@font@false\wtkw@@@keyword}%
+    {\@wtkw@use@font@true\wtkw@@@keyword}}
+\def\wtkw@@@keyword{%
   \wtkw@if@option@exist
-    {\wtkw@setkeys}%
-    {\wtkw@@keyword}}
-\def\wtkw@setkeys[#1]{%
-  \@ifnextchar"{\wtkw@@setkeys}{\wtkw@@@setkeys}#1\wtkw@nil}
-\def\wtkw@@setkeys"#1"#2\wtkw@nil{%
-  \setkeys[wtkw]{keyword}{read=#1#2}\wtkw@@keyword}
-\def\wtkw@@@setkeys#1\wtkw@nil{%
-  \setkeys[wtkw]{keyword}{#1}\wtkw@@keyword}
-\def\wtkw@@keyword#1{%
-  \@ifundefined{wtkw@#1@read}%
-    {\@wtkw@first@true
-      \expandafter\xdef\csname wtkw@#1@read\endcsname{\wtkw@read}%
-      \expandafter\xdef\csname wtkw@#1@index\endcsname{\wtkw@index}}%
-    {\@wtkw@first@false}%
-  \expandafter\ifx\csname wtkw@#1@index\endcsname\@empty
-    \expandafter\ifx\csname wtkw@#1@read\endcsname\@empty
-      \index{#1}%
-    \else
-      \index{\csname wtkw@#1@read\endcsname @#1}%
-    \fi
-  \else
-    \index{\csname wtkw@#1@index\endcsname}%
-  \fi
-  \bgroup
-    \if@wtkw@use@font@
-      \if@wtkw@first@\firstkeywordfont\else\keywordfont\fi
-    \else
-      \starkeywordfont
-    \fi
-    \if@wtkw@ruby@
-      \ifx\wtkw@ruby\wtkw@empty
-        \ruby{#1}{\csname wtkw@#1@read\endcsname}%
-      \else
-        \ruby{#1}{\wtkw@ruby}%
-      \fi
-    \else #1\fi
-  \egroup\@wtkw@ruby@false}
+    {\wtkw@@keyword}%
+    {\wtkw@keyword}}
+\def\wtkw@@keyword[#1]{%
+  \@for\wtkw@member:=#1\do{%
+    \expandafter\wtkw@syntax@sugar@a\wtkw@member\@nil
+    \expandafter\wtkw@syntax@sugar@b\wtkw@member\@nil
+    \expandafter\wtkw@setkeys\expandafter{\wtkw@member}}
+  \wtkw@keyword}
+\def\wtkw@keyword{}
 
-%%%% define \defkeyword command
+%%%% define \phantomkeyword command
 
 %%%% define \setkeywordstyle command
 
@@ -108,7 +88,7 @@
 \if@wtkw@use@shortcut@
   \let\kw\keyword
   \let\setkwstyle\setkeywordstyle
-  \let\defkw\defkeyword
+  \let\phantomkw\phantomkeyword
 \fi
 
 %% EOF

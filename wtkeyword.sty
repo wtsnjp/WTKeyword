@@ -15,10 +15,10 @@
 %%%% new ifs
 \newif\if@wtkw@use@shortcut@
 \newif\if@wtkw@use@index@
-\newif\if@wtkw@make@index@
-\newif\if@wtkw@full@index@
-\newif\if@wtkw@ruby@
-%\newif\if@wtkw@first@
+\newif\if@wtkw@no@index@\@wtkw@no@index@false
+\newif\if@wtkw@full@index@\@wtkw@full@index@false
+\newif\if@wtkw@ruby@\@wtkw@ruby@false
+\newif\if@wtkw@first@\@wtkw@first@true
 
 %%%% package options
 \DeclareOption{shortcut}{\@wtkw@use@shortcut@true}
@@ -32,7 +32,7 @@
 \define@cmdkeys[wtkw]{index@sp}[wtkw@temp@]{id,opt}
 \define@cmdkeys[wtkw]{index}[wtkw@temp@]{index,read,sup}
 \define@key[wtkw]{index}{full}{\@wtkw@full@index@true\def\wtkw@temp@full{#1}}
-\define@key[wtkw]{index}{noindex}[\@empty]{\@wtkw@make@index@true}
+\define@key[wtkw]{index}{noindex}[\@empty]{\@wtkw@no@index@true}
 
 %%%% key-value settings for style family
 \define@key[wtkw]{style}{kwcmd}{\wtkw@name@def{wtkw@kwcmd}##1{#1}}%
@@ -45,7 +45,8 @@
 \def\wtkw@name@xdef#1{\expandafter\xdef\csname #1\endcsname}
 \def\wtkw@name@use#1{\csname #1\endcsname}
 \def\wtkw@if@option@exist{\@ifnextchar[}
-\def\wtkw@empty{\@empty}
+\def\wtkw@@empty{\wtkw@empty}
+\let\wtkw@empty\@empty
 
 %%%% write index information to aux file
 \def\wtkw@write@aux#1{%
@@ -55,10 +56,13 @@
 %%%% setkeys and syntax sugar
 \def\wtkw@setkeys#1{\setkeys[wtkw]{index@sp,index,style}{#1}}
 \def\wtkw@not@syntax@sugar#1\@nil{}
-\def\wtkw@syntax@sugara"#1"#2\@nil{\def\wtkw@member{read=#1}}
-\def\wtkw@syntax@sugar@a{\@ifnextchar"{\wtkw@syntax@sugara}{\wtkw@not@syntax@sugar}}
-\def\wtkw@syntax@sugarb|#1\@nil{\def\wtkw@member{opt=#1}}
-\def\wtkw@syntax@sugar@b{\@ifnextchar|{\wtkw@syntax@sugarb}{\wtkw@not@syntax@sugar}}
+\def\wtkw@syntax@sugar@@a"#1"#2\@nil{\def\wtkw@member{read=#1}}
+\def\wtkw@syntax@sugar@a{\@ifnextchar"{\wtkw@syntax@sugar@@a}{\wtkw@not@syntax@sugar}}
+\def\wtkw@syntax@sugar@@b|#1\@nil{\def\wtkw@member{opt=#1}}
+\def\wtkw@syntax@sugar@b{\@ifnextchar|{\wtkw@syntax@sugar@@b}{\wtkw@not@syntax@sugar}}
+
+%%%% execute \index command
+\def\wtkw@index{}
 
 %%%% define \keyword command
 \def\keyword{\protect\wtkw@keyword@pre}
@@ -66,13 +70,13 @@
   \let\wtkw@read\@empty
   \let\wtkw@index\@empty
   \@ifstar
-    {\@wtkw@use@font@false\wtkw@@@keyword}%
-    {\@wtkw@use@font@true\wtkw@@@keyword}}
-\def\wtkw@@@keyword{%
+    {\@wtkw@use@font@false\wtkw@keyword@@pre}
+    {\@wtkw@use@font@true\wtkw@keyword@@pre}}
+\def\wtkw@keyword@@pre{%
   \wtkw@if@option@exist
-    {\wtkw@@keyword}%
-    {\wtkw@keyword}}
-\def\wtkw@@keyword[#1]{%
+    {\wtkw@keyword}%
+    {\wtkw@keyword@setkeys}}
+\def\wtkw@keyword@setkeys[#1]{%
   \@for\wtkw@member:=#1\do{%
     \expandafter\wtkw@syntax@sugar@a\wtkw@member\@nil
     \expandafter\wtkw@syntax@sugar@b\wtkw@member\@nil
@@ -84,7 +88,7 @@
 
 %%%% define \setkeywordstyle command
 
-%%%% define shortcut
+%%%% make shortcuts
 \if@wtkw@use@shortcut@
   \let\kw\keyword
   \let\setkwstyle\setkeywordstyle

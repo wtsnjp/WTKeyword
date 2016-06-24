@@ -69,7 +69,7 @@
       {\wtkw@name@use{wtkw@#1@index}}{#1}}}
 
 %%%% setkeys and syntax sugar
-\def\wtkw@setkeys#1{\setkeys[wtkw]{index@sp,index,style}{#1}}
+\def\wtkw@setkeys#1#2{\setkeys[wtkw]{#2}{#1}}
 \def\wtkw@not@syntax@sugar#1\@nil{}
 \def\wtkw@syntax@sugar@@a"#1"#2\@nil{\def\wtkw@member{read=#1}}
 \def\wtkw@syntax@sugar@a{\@ifnextchar"{\wtkw@syntax@sugar@@a}{\wtkw@not@syntax@sugar}}
@@ -82,16 +82,6 @@
 }
 
 %%%% define main function
-\def\wtkw@keyword{%
-  \wtkw@if@option@exist
-    {\wtkw@keyword}%
-    {\wtkw@keyword@setkeys}}
-\def\wtkw@keyword@setkeys[#1]{%
-  \@for\wtkw@member:=#1\do{%
-    \expandafter\wtkw@syntax@sugar@a\wtkw@member\@nil
-    \expandafter\wtkw@syntax@sugar@b\wtkw@member\@nil
-    \expandafter\wtkw@setkeys\expandafter{\wtkw@member}}
-  \wtkw@@keyword}
 \def\wtkw@@keyword#1{%
   \if@wtkw@save@index@
     \wtkw@shape@index{#1}%
@@ -109,13 +99,30 @@
 \def\wtkw@keyword@pre{%
   \@wtkw@phantom@false
   \@ifstar
-    {\@wtkw@use@font@false\wtkw@keyword}
-    {\@wtkw@use@font@true\wtkw@keyword}}
+    {\@wtkw@use@font@false\wtkw@keyword@@pre}
+    {\@wtkw@use@font@true\wtkw@keyword@@pre}}
+\def\wtkw@keyword@@pre{%
+  \wtkw@if@option@exist
+    {\wtkw@keyword}%
+    {\wtkw@keyword@setkeys}}
+\def\wtkw@keyword@setkeys[#1]{%
+  \@for\wtkw@member:=#1\do{%
+    \expandafter\wtkw@syntax@sugar@a\wtkw@member\@nil
+    \expandafter\wtkw@syntax@sugar@b\wtkw@member\@nil
+    \expandafter\wtkw@setkeys\expandafter{\wtkw@member}{index@sp,index,style}}
+  \wtkw@keyword}
 
 %%%% define \phantomkeyword command
 \def\keyword{\protect\wtkw@phantom@keyword@pre}
 \def\wtkw@phantom@keyword@pre{%
   \@wtkw@phantom@true
+  \wtkw@if@option@exist
+    {\wtkw@keyword}%
+    {\wtkw@phantom@keyword@setkeys}}
+\def\wtkw@phantom@keyword@setkeys[#1]{%
+  \@for\wtkw@member:=#1\do{%
+    \expandafter\wtkw@syntax@sugar@a\wtkw@member\@nil
+    \expandafter\wtkw@setkeys\expandafter{\wtkw@member}{index}}
   \wtkw@keyword}
 
 %%%% define \setkeywordstyle command

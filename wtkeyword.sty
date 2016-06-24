@@ -16,18 +16,21 @@
 % for package options
 \newif\if@wtkw@use@shortcut@
 \newif\if@wtkw@use@index@
+\newif\if@wtkw@debug@\@wtkw@debug@false
 % for commands
 \newif\if@wtkw@save@index@\@wtkw@save@index@false
 \newif\if@wtkw@no@index@\@wtkw@no@index@false
 \newif\if@wtkw@full@index@\@wtkw@full@index@false
 \newif\if@wtkw@ruby@\@wtkw@ruby@false
 \newif\if@wtkw@first@\@wtkw@first@true
+\newif\if@wtkw@phantom@
 
 %%%% package options
 \DeclareOption{shortcut}{\@wtkw@use@shortcut@true}
 \DeclareOption{noshortcut}{\@wtkw@use@shortcut@false}
 \DeclareOption{index}{\@wtkw@use@index@true}
 \DeclareOption{noindex}{\@wtkw@use@index@false}
+\DeclareOption{debug}{\@wtkw@debug@true}
 \ExecuteOptions{index,shortcut}
 \ProcessOptions\relax
 
@@ -37,6 +40,7 @@
 \def\wtkw@name@xdef#1{\expandafter\xdef\csname #1\endcsname}
 \def\wtkw@name@use#1{\csname #1\endcsname}
 \def\wtkw@if@option@exist{\@ifnextchar[}
+\def\wtkw@if@id@exist#1{\@ifundedined{wtkw@index@#1@id}}
 \def\wtkw@@empty{\wtkw@empty}
 \let\wtkw@empty\@empty
 \let\wtkw@index\index
@@ -57,9 +61,9 @@
 %%%% write index information to aux file
 \def\wtkw@index@xdef#1#2{\wtkw@name@xdef{wtkw@#2@index}{#1}}
 \def\wtkw@write@aux#1{%
-  \expandafter\let\expandafter\wtkw@temp@index\wtkw@name@use{wtkw@#1@index}%
   \expandafter\immediate\expandafter\write\expandafter\@auxout\expandafter{\expandafter
-    \expandafter\string\expandafter\wtkw@index@xdef\expandafter{\wtkw@temp@index}{#1}}}
+    \expandafter\string\expandafter\wtkw@index@xdef\expandafter
+      {\wtkw@name@use{wtkw@#1@index}}{#1}}}
 
 %%%% setkeys and syntax sugar
 \def\wtkw@setkeys#1{\setkeys[wtkw]{index@sp,index,style}{#1}}
@@ -72,13 +76,8 @@
 %%%% commands for making index
 \def\wtkw@shape@index{}
 
-%%%% define \keyword command
-\def\keyword{\protect\wtkw@keyword@pre}
-\def\wtkw@keyword@pre{%
-  \@ifstar
-    {\@wtkw@use@font@false\wtkw@keyword@@pre}
-    {\@wtkw@use@font@true\wtkw@keyword@@pre}}
-\def\wtkw@keyword@@pre{%
+%%%% define main function
+\def\wtkw@keyword{%
   \wtkw@if@option@exist
     {\wtkw@keyword}%
     {\wtkw@keyword@setkeys}}
@@ -87,20 +86,46 @@
     \expandafter\wtkw@syntax@sugar@a\wtkw@member\@nil
     \expandafter\wtkw@syntax@sugar@b\wtkw@member\@nil
     \expandafter\wtkw@setkeys\expandafter{\wtkw@member}}
-  \wtkw@keyword}
-\def\wtkw@keyword{%
-  \wtkw@exe@index
-}
+  \wtkw@@keyword}
+\def\wtkw@@keyword#1{%
+  \if@wtkw@save@index@
+    \wtkw@shape@index{#1}%
+    \wtkw@write@aux{#1}%
+  \fi
+  \wtkw@if@id@exist{#1}
+    {\wtkw@exe@index{#1}}
+    {\wtkw@warn@undefined@id{#1}}%
+  \if@wtkw@phantom\else
+    \wtkw@print@keyword{#1}%
+  \fi}
+
+%%%% define \keyword command
+\def\keyword{\protect\wtkw@keyword@pre}
+\def\wtkw@keyword@pre{%
+  \@wtkw@phantom@false
+  \@ifstar
+    {\@wtkw@use@font@false\wtkw@keyword}
+    {\@wtkw@use@font@true\wtkw@keyword}}
 
 %%%% define \phantomkeyword command
+\def\keyword{\protect\wtkw@keyword@pre}
+\def\wtkw@keyword@pre{%
+  \@wtkw@phantom@true
+  \wtkw@keyword}
 
 %%%% define \setkeywordstyle command
 
-%%%% make shortcuts
+%%%% define \keywordsetup command
+
+%%%% make shortcuts (for shortcut option)
 \if@wtkw@use@shortcut@
   \let\kw\keyword
-  \let\setkwstyle\setkeywordstyle
   \let\phantomkw\phantomkeyword
+  \let\setkwstyle\setkeywordstyle
+  \let\kwsetup\keywordsetup
 \fi
+
+%%%% warn undefined id (for debug option)
+\def\wtkw@warn@undefined@id#1{}
 
 %% EOF

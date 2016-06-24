@@ -56,7 +56,10 @@
 %%%% key-value settings for style family
 \define@cmdkey[wtkw]{style}[wtkw@temp@]{ruby}[\wtkw@empty]{\@wtkw@ruby@true}
 \define@key[wtkw]{style}{kwcmd}{\wtkw@name@def{wtkw@kwcmd}##1{#1}}%
-\define@key[wtkw]{style}{rubycmd}{\wtkw@name@def{wtkw@rubycmd}##1{#1}}%
+
+%%%% key-value settings for setup family
+\define@key[wtkw]{setup}{rubycmd}{\wtkw@name@def{wtkw@rubycmd}##1{#1}}%
+\define@key[wtkw]{setup}{indexcmd}{\wtkw@name@def{wtkw@indexcmd}##1{#1}}%
 
 %%%% write index information to aux file
 \def\wtkw@index@xdef#1#2{\wtkw@name@xdef{wtkw@#2@index}{#1}}
@@ -74,7 +77,9 @@
 \def\wtkw@syntax@sugar@b{\@ifnextchar|{\wtkw@syntax@sugar@@b}{\wtkw@not@syntax@sugar}}
 
 %%%% commands for making index
-\def\wtkw@shape@index{}
+\def\wtkw@shape@index{%
+  %\wtkw@name@edef{wtkw@#1@index}{}
+}
 
 %%%% define main function
 \def\wtkw@keyword{%

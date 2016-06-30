@@ -48,18 +48,20 @@
 %%%% key-value settings for index families
 \define@cmdkeys[wtkw]{index@sp}[wtkw@temp@]{id,opt}
 \define@cmdkey[wtkw]{index}[wtkw@temp@]{index}[\wtkw@empty]{\@wtkw@save@index@true}
-\define@cmdkey[wtkw]{index}[wtkw@temp@]{read}[\wtkw@empty]{\@wtkw@save@index@true}
-\define@cmdkey[wtkw]{index}[wtkw@temp@]{sup}[\wtkw@empty]{\@wtkw@save@index@true}
+\define@cmdkey[wtkw]{index}[wtkw@temp@]{read}{\@wtkw@save@index@true}
+\define@cmdkey[wtkw]{index}[wtkw@temp@]{sup}{\@wtkw@save@index@true}
 \define@cmdkey[wtkw]{index}[wtkw@temp@]{full}{\@wtkw@save@index@true\@wtkw@full@index@true}
 \define@key[wtkw]{index}{noindex}[\wtkw@empty]{\@wtkw@no@index@true}
 
 %%%% key-value settings for style family
 \define@cmdkey[wtkw]{style}[wtkw@temp@]{ruby}[\wtkw@empty]{\@wtkw@ruby@true}
-\define@key[wtkw]{style}{kwcmd}{\wtkw@name@def{wtkw@kwcmd}##1{#1}}%
+\define@key[wtkw]{style}{kwcmd}{\wtkw@name@def{wtkw@temp@kwcmd}##1{#1}}
 
 %%%% key-value settings for setup family
-\define@key[wtkw]{setup}{rubycmd}{\wtkw@name@def{wtkw@rubycmd}##1{#1}}%
-\define@key[wtkw]{setup}{indexcmd}{\wtkw@name@def{wtkw@indexcmd}##1{#1}}%
+\define@key[wtkw]{setup}{kwcmd}{\wtkw@name@def{wtkw@kwcmd}##1{#1}}
+\define@key[wtkw]{setup}{kwcmd*}{\wtkw@name@def{wtkw@sub@kwcmd}##1{#1}}
+\define@key[wtkw]{setup}{rubycmd}{\wtkw@name@def{wtkw@rubycmd}##1##2{#1}}
+\define@key[wtkw]{setup}{indexcmd}{\wtkw@name@def{wtkw@indexcmd}##1{#1}}
 
 %%%% write index information to aux file
 \def\wtkw@index@xdef#1#2{\wtkw@name@xdef{wtkw@#2@index}{#1}}

@@ -138,6 +138,9 @@
 \fi
 
 %%%% warn undefined id (for debug option)
-\def\wtkw@warn@undefined@id#1{}
+\def\wtkw@warn@undefined@id#1{%
+  \if@wtkw@debug@
+    \wtkw@warn{keyword id '#1' does not exist.}%
+  \fi}
 
 %% EOF

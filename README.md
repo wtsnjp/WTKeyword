@@ -1,4 +1,4 @@
-# WTKeyword Package (v0.1)
+# WTKeyword Package (dev)
 
 WTKeyword package supports you to make index with LaTeX2e. This package is a part of the WT Series.
 

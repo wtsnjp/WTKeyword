@@ -20,7 +20,6 @@
 % for commands
 \newif\if@wtkw@save@index@\@wtkw@save@index@false
 \newif\if@wtkw@no@index@\@wtkw@no@index@false
-\newif\if@wtkw@full@index@\@wtkw@full@index@false
 \newif\if@wtkw@ruby@\@wtkw@ruby@false
 \newif\if@wtkw@use@subcmd@
 \newif\if@wtkw@phantom@
@@ -53,8 +52,6 @@
 \define@cmdkey[wtkw]{index}[wtkw@temp@]{index}{\@wtkw@save@index@true}
 \define@cmdkey[wtkw]{index}[wtkw@temp@]{read}{\@wtkw@save@index@true}
 \define@cmdkey[wtkw]{index}[wtkw@temp@]{sup}{\@wtkw@save@index@true}
-\define@cmdkey[wtkw]{index}[wtkw@temp@]{see}{\@wtkw@save@index@true}
-\define@cmdkey[wtkw]{index}[wtkw@temp@]{full}{\@wtkw@save@index@true\@wtkw@full@index@true}
 \define@key[wtkw]{index}{noindex}[\wtkw@empty]{\@wtkw@no@index@true}
 
 %%%% key-value settings for style family
@@ -84,24 +81,14 @@
 
 %%%% commands for making index
 \def\wtkw@index@save#1{%
-  \if@wtkw@full@index@
-    \wtkw@name@xdef{wtkw@id=#1@index}{\wtkw@temp@full}%
-  \else
-    \wtkw@if@id@exist{#1}
-      {\relax}
-      {\expandafter\newif\wtkw@name@use{if@wtkw@id=#1@no@opt@}}%
-    \wtkw@if@name@empty{wtkw@temp@read}
-      {\relax}
-      {\wtkw@name@edef\wtkw@temp@read{\wtkw@temp@read @}}%
-    \wtkw@if@name@empty{wtkw@temp@sup}
-      {\relax}
-      {\wtkw@name@edef\wtkw@temp@sup{\wtkw@name@use{wtkw@\wtkw@temp@sup @index}!}}%
-    \wtkw@if@name@empty{wtkw@temp@see}
-      {\wtkw@name@use{@wtkw@id=#1@no@opt@false}}
-      {\wtkw@name@edef\wtkw@temp@see{|\wtkw@temp@see}\wtkw@name@use{@wtkw@id=#1@no@opt@true}}%
-    \wtkw@name@xdef{wtkw@id=#1@index}{%
-      \wtkw@temp@sup\wtkw@temp@read\wtkw@temp@index\wtkw@temp@see}%
-  \fi}
+  \wtkw@if@name@empty{wtkw@temp@read}
+    {\relax}
+    {\wtkw@name@edef\wtkw@temp@read{\wtkw@temp@read @}}%
+  \wtkw@if@name@empty{wtkw@temp@sup}
+    {\relax}
+    {\wtkw@name@edef\wtkw@temp@sup{\wtkw@name@use{wtkw@\wtkw@temp@sup @index}!}}%
+  \wtkw@name@xdef{wtkw@id=#1@index}{\wtkw@temp@sup\wtkw@temp@read\wtkw@temp@index}}
+\def\wtkw@index@exe#1{}
 
 %%%% define main function
 \def\wtkw@keyword#1{%

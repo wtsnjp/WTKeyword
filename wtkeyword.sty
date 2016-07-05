@@ -92,13 +92,17 @@
 
 %%%% define main function
 \def\wtkw@keyword#1{%
-  \if@wtkw@save@index@
-    \wtkw@index@save{#1}%
-    \wtkw@write@aux{#1}%
+  \if@wtkw@use@index@
+    \if@wtkw@save@index@
+      \wtkw@index@save{#1}%
+      \wtkw@write@aux{#1}%
+    \fi
+    \if@wtkw@no@index@\else
+      \wtkw@if@id@exist{#1}
+        {\wtkw@index@exe{#1}}
+        {\wtkw@warn@undefined@id{#1}}%
+    \fi
   \fi
-  \wtkw@if@id@exist{#1}
-    {\wtkw@index@exe{#1}}
-    {\wtkw@warn@undefined@id{#1}}%
   \if@wtkw@phantom\else
     \wtkw@print@keyword{#1}%
   \fi}

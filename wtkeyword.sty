@@ -47,7 +47,22 @@
   \expandafter\ifx\wtkw@name@use{#1}\wtkw@@empty #2\eles #3\fi}
 \def\wtkw@if@option@exist{\wtkw@ifnextchar[}
 \def\wtkw@if@id@exist#1{\wtkw@ifundedined{wtkw@id=#1@index}}
-\def\wtkw@ruby#1#2{}
+
+%%%% define default ruby command (based on 'Teach Yourself LaTeX2e' by Tetsumi Yoshinaga)
+\def\wtkw@ruby#1#2{%
+  \leavevmode
+  \vbox{\offinterlineskip
+    \skip@ 0pt plus 1fil
+    \kanjiskip\skip@ \xkanjiskip\skip@
+    \divide\skip@\tw@
+    \autospacing \autoxspacing
+    \setbox\z@\hbox{\tiny #2}%
+    \setbox\tw@\hbox{#1}%
+    \dimen@ \ifdim\wd\z@>\wd\tw@ \wd\z@ \else \wd\tw@ \fi
+    \vbox to\z@{\vss
+      \hbox to\deimen@{\hskip\skip@ \unhbox\z@ \hskip\skip@}}%
+    \vskip.5\p@
+    \hbox to\dimen@{\hskip\skip@ \unhbox\tw@ \hskip\skip@}}}
 
 %%%% key-value settings for index families
 % define keys
@@ -183,11 +198,11 @@
   \wtkw@init@index@family
   \@for\wtkw@member:=#1\do{%
     \expandafter\wtkw@syntax@sugar@a\wtkw@member\wtkw@nil
-    \expandafter\wtkw@syntax@sugar@b\wtkw@member\wtkw@nil
     \expandafter\wtkw@setkeys@r\expandafter{\wtkw@member}{index}}
   \wtkw@keyword}
 
 %%%% define \keywordsetup command
+\def\keywordsetup#1{\setkeys[wtkw]{setup}{#1}}
 
 %%%% warn undefined id (for debug option)
 \def\wtkw@warn@undefined@id#1{%

@@ -18,8 +18,8 @@
 \newif\if@wtkw@debug@\@wtkw@debug@false
 % for commands
 \newif\if@wtkw@save@index@
-\newif\if@wtkw@no@index@\@wtkw@no@index@false
-\newif\if@wtkw@ruby@\@wtkw@ruby@false
+\newif\if@wtkw@no@index@
+\newif\if@wtkw@ruby@
 \newif\if@wtkw@use@subcmd@
 \newif\if@wtkw@phantom@
 
@@ -47,25 +47,40 @@
   \expandafter\ifx\wtkw@name@use{#1}\wtkw@@empty #2\eles #3\fi}
 \def\wtkw@if@option@exist{\wtkw@ifnextchar[}
 \def\wtkw@if@id@exist#1{\wtkw@ifundedined{wtkw@id=#1@index}}
+\def\wtkw@ruby#1#2{}
 
 %%%% key-value settings for index families
+% define keys
 \define@cmdkeys[wtkw]{index@sp}[wtkw@temp@]{id,opt}
 \define@cmdkey[wtkw]{index}[wtkw@temp@]{index}{\@wtkw@save@index@true}
 \define@cmdkey[wtkw]{index}[wtkw@temp@]{read}{\@wtkw@save@index@true}
 \define@cmdkey[wtkw]{index}[wtkw@temp@]{sup}{\@wtkw@save@index@true}
 \define@key[wtkw]{index}{noindex}[\wtkw@empty]{\@wtkw@no@index@true}
+% define initialize command
+\def\wtkw@init@index@family{%
+  \setkeys[wtkw]{index@sp,index}{id=\wtkw@empty, opt=\wtkw@empty,
+    index=\wtkw@empty, read=\wtkw@empty, sup=\wtkw@empty}%
+  \@wtkw@save@index@false\@wtkw@no@index@false}
 
 %%%% key-value settings for style family
+% define kyes
 \define@cmdkey[wtkw]{style}[wtkw@temp@]{ruby}[\wtkw@empty]{\@wtkw@ruby@true}
-\define@key[wtkw]{style}{kwcmd}{\wtkw@name@def{wtkw@temp@kwcmd}##1{#1}}
+\define@key[wtkw]{style}{kwcmd}{\def\wtkw@temp@kwcmd##1{#1}}
+% define initialize command
+\def\wtkw@init@style@family{\@wtkw@ruby@false\let\wtkw@tempkwcmd\relax}
 
 %%%% key-value settings for setup family
+% define kyes
 \define@key[wtkw]{setup}{kwcmd}{\def\wtkw@kwcmd##1{#1}}
 \define@key[wtkw]{setup}{kwcmd*}{\def\wtkw@sub@kwcmd##1{#1}}
 \define@key[wtkw]{setup}{rubycmd}{\def\wtkw@rubycmd##1##2{#1}}
 \define@key[wtkw]{setup}{indexcmd}{\def\wtkw@indexcmd##1{#1}}
-
-%%%% initialize index families
+% initialize
+\setkeys[wtkw]{setup}{
+  kwcmd    = #1,                  % output normaly
+  kwcmd*   = \textbf{#1},         % output with bold font
+  rubycmd  = \wtkw@ruby{#1}{#2},  % use original ruby command
+  indexcmd = \wtkw@index{#1}}
 
 %%%% setkeys and syntax sugar
 \def\wtkw@setkeys@r#1#2{\setkeys[wtkw]{#2}{#1}}
@@ -98,16 +113,16 @@
       {\wtkw@name@use{wtkw@id=#1@index}}{#1}}}
 
 %%%% command for printing index
-\def\wtkw@print@keyword#1{
-  \wtkw@ifempty{wtkw@temp@kwcmd}{%
+\def\wtkw@print@keyword#1{%
+  \ifx\wtkw@temp@kwcmd\relax
     \if@wtkw@use@subcmd@
       \let\wtkw@temp@kwcmd\wtkw@sub@kwcmd
     \else
       \let\wtkw@temp@kwcmd\wtkw@kwcmd
-    \fi}{\relax}
+    \fi
+  \fi
   \wtkw@temp@kwcmd{%
     \if@wtkw@ruby@
-      \@wtkw@ruby@false
       \wtkw@ifempty{wtkw@temp@ruby}{%
         \wtkw@ifempty{wtkw@temp@read}
           {#1}
@@ -127,9 +142,7 @@
       \wtkw@index@save{\wtkw@temp@id}%
       \wtkw@write@aux{\wtkw@temp@id}%
     \fi
-    \if@wtkw@no@index@
-      \@wtkw@no@index@false
-    \else
+    \if@wtkw@no@index@\else
       \wtkw@if@id@exist{\wtkw@temp@id}
         {\wtkw@index@exe{\wtkw@temp@id}}
         {\wtkw@warn@undefined@id{\wtkw@temp@id}}%
@@ -152,6 +165,7 @@
     {\wtkw@keyword@setkeys}
     {\wtkw@keyword}}
 \def\wtkw@keyword@setkeys[#1]{%
+  \wtkw@init@index@family\wtkw@init@style@family
   \@for\wtkw@member:=#1\do{%
     \expandafter\wtkw@syntax@sugar@a\wtkw@member\wtkw@nil
     \expandafter\wtkw@syntax@sugar@b\wtkw@member\wtkw@nil
@@ -166,6 +180,7 @@
     {\wtkw@phantom@keyword@setkeys}
     {\wtkw@keyword}}
 \def\wtkw@phantom@keyword@setkeys[#1]{%
+  \wtkw@init@index@family
   \@for\wtkw@member:=#1\do{%
     \expandafter\wtkw@syntax@sugar@a\wtkw@member\wtkw@nil
     \expandafter\wtkw@syntax@sugar@b\wtkw@member\wtkw@nil

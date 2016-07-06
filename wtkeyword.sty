@@ -34,8 +34,8 @@
 \let\wtkw@ifstar\@ifstar
 \let\wtkw@empty\@empty
 \let\wtkw@ifnextchar\@ifnextchar
-\let\wtkw@ifundefined\@ifundedined
-\let\wtkw@indexcmd\index
+\let\wtkw@ifundefined\@ifundefined
+\let\wtkw@index\index
 
 %%%% define utility commands
 \def\wtkw@name@def#1{\expandafter\def\csname #1\endcsname}
@@ -43,10 +43,8 @@
 \def\wtkw@name@xdef#1{\expandafter\xdef\csname #1\endcsname}
 \def\wtkw@name@use#1{\csname #1\endcsname}
 \def\wtkw@@empty{\wtkw@empty}
-\def\wtkw@ifempty#1#2#3{%
-  \expandafter\ifx\wtkw@name@use{#1}\wtkw@@empty #2\eles #3\fi}
 \def\wtkw@if@option@exist{\wtkw@ifnextchar[}
-\def\wtkw@if@id@exist#1{\wtkw@ifundedined{wtkw@id=#1@index}}
+\def\wtkw@if@id@exist#1{\wtkw@ifundefined{wtkw@id=#1@index}}
 
 %%%% define default ruby command (based on 'Teach Yourself LaTeX2e' by Tetsumi Yoshinaga)
 \def\wtkw@ruby#1#2{%
@@ -60,7 +58,7 @@
     \setbox\tw@\hbox{#1}%
     \dimen@ \ifdim\wd\z@>\wd\tw@ \wd\z@ \else \wd\tw@ \fi
     \vbox to\z@{\vss
-      \hbox to\deimen@{\hskip\skip@ \unhbox\z@ \hskip\skip@}}%
+      \hbox to\dimen@{\hskip\skip@ \unhbox\z@ \hskip\skip@}}%
     \vskip.5\p@
     \hbox to\dimen@{\hskip\skip@ \unhbox\tw@ \hskip\skip@}}}
 
@@ -82,7 +80,7 @@
 \define@cmdkey[wtkw]{style}[wtkw@temp@]{ruby}[\wtkw@empty]{\@wtkw@ruby@true}
 \define@key[wtkw]{style}{kwcmd}{\def\wtkw@temp@kwcmd##1{#1}}
 % define initialize command
-\def\wtkw@init@style@family{\@wtkw@ruby@false\let\wtkw@tempkwcmd\relax}
+\def\wtkw@init@style@family{\@wtkw@ruby@false\let\wtkw@temp@kwcmd\relax}
 
 %%%% key-value settings for setup family
 % define kyes
@@ -107,17 +105,17 @@
 
 %%%% commands for making index
 \def\wtkw@index@save#1{%
-  \wtkw@ifempty{wtkw@temp@read}
-    {\relax}
-    {\edef\wtkw@temp@read{\wtkw@temp@read @}}%
-  \wtkw@ifempty{wtkw@temp@sup}
-    {\relax}
-    {\edef\wtkw@temp@sup{\wtkw@name@use{wtkw@\wtkw@temp@sup @index}!}}%
+  \ifx\wtkw@temp@read\wtkw@@empty\else
+    \edef\wtkw@temp@read{\wtkw@temp@read @}%
+  \fi
+  \ifx\wtkw@temp@sup\wtkw@@empty\else
+    \edef\wtkw@temp@sup{\wtkw@name@use{wtkw@\wtkw@temp@sup @index}!}%
+  \fi
   \wtkw@name@xdef{wtkw@id=#1@index}{\wtkw@temp@sup\wtkw@temp@read\wtkw@temp@index}}
 \def\wtkw@index@exe#1{%
-  \wtkw@ifempty{wtkw@temp@opt}
-    {\relax}
-    {\edef\wtkw@temp@opt{|\wtkw@temp@opt}}%
+  \ifx\wtkw@temp@opt\wtkw@@empty\else
+    \edef\wtkw@temp@opt{|\wtkw@temp@opt}%
+  \fi
   \wtkw@indexcmd{\wtkw@name@use{wtkw@id=#1@index}\wtkw@temp@opt}}
 
 %%%% write index information to aux file
@@ -138,33 +136,35 @@
   \fi
   \wtkw@temp@kwcmd{%
     \if@wtkw@ruby@
-      \wtkw@ifempty{wtkw@temp@ruby}{%
-        \wtkw@ifempty{wtkw@temp@read}
-          {#1}
-          {\wtkw@rubycmd{#1}{\wtkw@temp@read}}%
-      }{\wtkw@rubycmd{#1}{\wtkw@temp@ruby}}%
-    \else #1\fi}}
+      \ifx\wtkw@temp@ruby\wtkw@@empty
+        \ifx\wtkw@temp@read\wtkw@@empty #1\else
+          \wtkw@rubycmd{#1}{\wtkw@temp@read}%
+        \fi
+      \else
+        \wtkw@rubycmd{#1}{\wtkw@temp@ruby}%
+      \fi}%
+    \else #1\fi}
 
 %%%% define main function
 \def\wtkw@keyword#1{%
   % decide keyword id
-  \wtkw@ifempty{wtkw@temp@id}
-    {\def\wtkw@temp@id{#1}}
-    {\relax}%
+  \ifx\wtkw@temp@id\wtkw@@empty
+    \def\wtkw@temp@id{#1}%
+  \fi
   % save/execute index
   \if@wtkw@use@index@
     \if@wtkw@save@index@
-      \wtkw@index@save{\wtkw@temp@id}%
-      \wtkw@write@aux{\wtkw@temp@id}%
+      \expandafter\wtkw@index@save\expandafter{\wtkw@temp@id}%
+      \expandafter\wtkw@write@aux\expandafter{\wtkw@temp@id}%
     \fi
     \if@wtkw@no@index@\else
-      \wtkw@if@id@exist{\wtkw@temp@id}
-        {\wtkw@index@exe{\wtkw@temp@id}}
-        {\wtkw@warn@undefined@id{\wtkw@temp@id}}%
+      \expandafter\wtkw@if@id@exist\expandafter{\wtkw@temp@id}
+        {\expandafter\wtkw@index@exe\expandafter{\wtkw@temp@id}}
+        {\expandafter\wtkw@warn@undefined@id\expandafter{\wtkw@temp@id}}%
     \fi
   \fi
   % print keyword
-  \if@wtkw@phantom\else
+  \if@wtkw@phantom@\else
     \wtkw@print@keyword{#1}%
   \fi}
 
@@ -172,6 +172,7 @@
 \def\keyword{\protect\wtkw@keyword@pre}
 \def\wtkw@keyword@pre{%
   \@wtkw@phantom@false
+  \wtkw@init@index@family\wtkw@init@style@family
   \wtkw@ifstar
     {\@wtkw@use@subcmd@false\wtkw@keyword@@pre}
     {\@wtkw@use@subcmd@true\wtkw@keyword@@pre}}
@@ -180,7 +181,6 @@
     {\wtkw@keyword@setkeys}
     {\wtkw@keyword}}
 \def\wtkw@keyword@setkeys[#1]{%
-  \wtkw@init@index@family\wtkw@init@style@family
   \@for\wtkw@member:=#1\do{%
     \expandafter\wtkw@syntax@sugar@a\wtkw@member\wtkw@nil
     \expandafter\wtkw@syntax@sugar@b\wtkw@member\wtkw@nil
@@ -191,11 +191,11 @@
 \def\phantomkeyword{\protect\wtkw@phantom@keyword@pre}
 \def\wtkw@phantom@keyword@pre{%
   \@wtkw@phantom@true
+  \wtkw@init@index@family
   \wtkw@if@option@exist
     {\wtkw@phantom@keyword@setkeys}
     {\wtkw@keyword}}
 \def\wtkw@phantom@keyword@setkeys[#1]{%
-  \wtkw@init@index@family
   \@for\wtkw@member:=#1\do{%
     \expandafter\wtkw@syntax@sugar@a\wtkw@member\wtkw@nil
     \expandafter\wtkw@setkeys@r\expandafter{\wtkw@member}{index}}

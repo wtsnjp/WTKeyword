@@ -17,7 +17,7 @@
 \newif\if@wtkw@use@index@
 \newif\if@wtkw@debug@\@wtkw@debug@false
 % for commands
-\newif\if@wtkw@save@index@\@wtkw@save@index@false
+\newif\if@wtkw@save@index@
 \newif\if@wtkw@no@index@\@wtkw@no@index@false
 \newif\if@wtkw@ruby@\@wtkw@ruby@false
 \newif\if@wtkw@use@subcmd@
@@ -43,7 +43,7 @@
 \def\wtkw@name@xdef#1{\expandafter\xdef\csname #1\endcsname}
 \def\wtkw@name@use#1{\csname #1\endcsname}
 \def\wtkw@@empty{\wtkw@empty}
-\def\wtkw@if@name@empty#1#2#3{%
+\def\wtkw@ifempty#1#2#3{%
   \expandafter\ifx\wtkw@name@use{#1}\wtkw@@empty #2\eles #3\fi}
 \def\wtkw@if@option@exist{\wtkw@ifnextchar[}
 \def\wtkw@if@id@exist#1{\wtkw@ifundedined{wtkw@id=#1@index}}
@@ -60,17 +60,12 @@
 \define@key[wtkw]{style}{kwcmd}{\wtkw@name@def{wtkw@temp@kwcmd}##1{#1}}
 
 %%%% key-value settings for setup family
-\define@key[wtkw]{setup}{kwcmd}{\wtkw@name@def{wtkw@kwcmd}##1{#1}}
-\define@key[wtkw]{setup}{kwcmd*}{\wtkw@name@def{wtkw@sub@kwcmd}##1{#1}}
-\define@key[wtkw]{setup}{rubycmd}{\wtkw@name@def{wtkw@rubycmd}##1##2{#1}}
-\define@key[wtkw]{setup}{indexcmd}{\wtkw@name@def{wtkw@indexcmd}##1{#1}}
+\define@key[wtkw]{setup}{kwcmd}{\def\wtkw@kwcmd##1{#1}}
+\define@key[wtkw]{setup}{kwcmd*}{\def\wtkw@sub@kwcmd##1{#1}}
+\define@key[wtkw]{setup}{rubycmd}{\def\wtkw@rubycmd##1##2{#1}}
+\define@key[wtkw]{setup}{indexcmd}{\def\wtkw@indexcmd##1{#1}}
 
-%%%% write index information to aux file
-\def\wtkw@index@xdef#1#2{\wtkw@name@xdef{wtkw@id=#2@index}{#1}}
-\def\wtkw@write@aux#1{%
-  \expandafter\immediate\expandafter\write\expandafter\@auxout\expandafter{\expandafter
-    \expandafter\string\expandafter\wtkw@index@xdef\expandafter
-      {\wtkw@name@use{wtkw@id=#1@index}}{#1}}}
+%%%% initialize index families
 
 %%%% setkeys and syntax sugar
 \def\wtkw@setkeys@r#1#2{\setkeys[wtkw]{#2}{#1}}
@@ -82,26 +77,48 @@
 
 %%%% commands for making index
 \def\wtkw@index@save#1{%
-  \wtkw@if@name@empty{wtkw@temp@read}
+  \wtkw@ifempty{wtkw@temp@read}
     {\relax}
     {\edef\wtkw@temp@read{\wtkw@temp@read @}}%
-  \wtkw@if@name@empty{wtkw@temp@sup}
+  \wtkw@ifempty{wtkw@temp@sup}
     {\relax}
     {\edef\wtkw@temp@sup{\wtkw@name@use{wtkw@\wtkw@temp@sup @index}!}}%
   \wtkw@name@xdef{wtkw@id=#1@index}{\wtkw@temp@sup\wtkw@temp@read\wtkw@temp@index}}
 \def\wtkw@index@exe#1{%
-  \wtkw@if@name@empty{wtkw@temp@opt}
+  \wtkw@ifempty{wtkw@temp@opt}
     {\relax}
     {\edef\wtkw@temp@opt{|\wtkw@temp@opt}}%
   \wtkw@indexcmd{\wtkw@name@use{wtkw@id=#1@index}\wtkw@temp@opt}}
 
+%%%% write index information to aux file
+\def\wtkw@index@xdef#1#2{\wtkw@name@xdef{wtkw@id=#2@index}{#1}}
+\def\wtkw@write@aux#1{%
+  \expandafter\immediate\expandafter\write\expandafter\@auxout\expandafter{\expandafter
+    \expandafter\string\expandafter\wtkw@index@xdef\expandafter
+      {\wtkw@name@use{wtkw@id=#1@index}}{#1}}}
+
 %%%% command for printing index
-\def\wtkw@print@keyword#1{}
+\def\wtkw@print@keyword#1{
+  \wtkw@ifempty{wtkw@temp@kwcmd}{%
+    \if@wtkw@use@subcmd@
+      \let\wtkw@temp@kwcmd\wtkw@sub@kwcmd
+    \else
+      \let\wtkw@temp@kwcmd\wtkw@kwcmd
+    \fi}{\relax}
+  \wtkw@temp@kwcmd{%
+    \if@wtkw@ruby@
+      \@wtkw@ruby@false
+      \wtkw@ifempty{wtkw@temp@ruby}{%
+        \wtkw@ifempty{wtkw@temp@read}
+          {#1}
+          {\wtkw@rubycmd{#1}{\wtkw@temp@read}}%
+      }{\wtkw@rubycmd{#1}{\wtkw@temp@ruby}}%
+    \else #1\fi}}
 
 %%%% define main function
 \def\wtkw@keyword#1{%
   % decide keyword id
-  \wtkw@if@name@empty{wtkw@temp@id}
+  \wtkw@ifempty{wtkw@temp@id}
     {\def\wtkw@temp@id{#1}}
     {\relax}%
   % save/execute index
@@ -110,7 +127,9 @@
       \wtkw@index@save{\wtkw@temp@id}%
       \wtkw@write@aux{\wtkw@temp@id}%
     \fi
-    \if@wtkw@no@index@\else
+    \if@wtkw@no@index@
+      \@wtkw@no@index@false
+    \else
       \wtkw@if@id@exist{\wtkw@temp@id}
         {\wtkw@index@exe{\wtkw@temp@id}}
         {\wtkw@warn@undefined@id{\wtkw@temp@id}}%
@@ -152,8 +171,6 @@
     \expandafter\wtkw@syntax@sugar@b\wtkw@member\wtkw@nil
     \expandafter\wtkw@setkeys@r\expandafter{\wtkw@member}{index}}
   \wtkw@keyword}
-
-%%%% define \setkeywordstyle command
 
 %%%% define \keywordsetup command
 

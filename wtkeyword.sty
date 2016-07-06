@@ -30,19 +30,23 @@
 \ExecuteOptions{index}
 \ProcessOptions\relax
 
+%%%% copy LaTeX commands
+\let\wtkw@ifstar\@ifstar
+\let\wtkw@empty\@empty
+\let\wtkw@ifnextchar\@ifnextchar
+\let\wtkw@ifundefined\@ifundedined
+\let\wtkw@index\index
+
 %%%% define utility commands
 \def\wtkw@name@def#1{\expandafter\def\csname #1\endcsname}
 \def\wtkw@name@edef#1{\expandafter\edef\csname #1\endcsname}
 \def\wtkw@name@xdef#1{\expandafter\xdef\csname #1\endcsname}
 \def\wtkw@name@use#1{\csname #1\endcsname}
+\def\wtkw@@empty{\wtkw@empty}
 \def\wtkw@if@name@empty#1#2#3{%
   \expandafter\ifx\wtkw@name@use{#1}\wtkw@@empty #2\eles #3\fi}
-\def\wtkw@if@option@exist{\@ifnextchar[}
-\def\wtkw@if@id@exist#1{\@ifundedined{wtkw@id=#1@index}}
-\let\wtkw@ifstar\@ifstar
-\def\wtkw@@empty{\wtkw@empty}
-\let\wtkw@empty\@empty
-\let\wtkw@index\index
+\def\wtkw@if@option@exist{\wtkw@ifnextchar[}
+\def\wtkw@if@id@exist#1{\wtkw@ifundedined{wtkw@id=#1@index}}
 
 %%%% key-value settings for index families
 \define@cmdkeys[wtkw]{index@sp}[wtkw@temp@]{id,opt}

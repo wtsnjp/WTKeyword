@@ -35,7 +35,7 @@
 \let\wtkw@empty\@empty
 \let\wtkw@ifnextchar\@ifnextchar
 \let\wtkw@ifundefined\@ifundedined
-\let\wtkw@index\index
+\let\wtkw@indexcmd\index
 
 %%%% define utility commands
 \def\wtkw@name@def#1{\expandafter\def\csname #1\endcsname}
@@ -74,10 +74,10 @@
 
 %%%% setkeys and syntax sugar
 \def\wtkw@setkeys@r#1#2{\setkeys[wtkw]{#2}{#1}}
-\def\wtkw@not@syntax@sugar#1\@nil{}
-\def\wtkw@syntax@sugar@@a"#1"#2\@nil{\def\wtkw@member{read=#1}}
+\def\wtkw@not@syntax@sugar#1\wtkw@nil{}
+\def\wtkw@syntax@sugar@@a"#1"#2\wtkw@nil{\def\wtkw@member{read=#1}}
 \def\wtkw@syntax@sugar@a{\@ifnextchar"{\wtkw@syntax@sugar@@a}{\wtkw@not@syntax@sugar}}
-\def\wtkw@syntax@sugar@@b|#1\@nil{\def\wtkw@member{opt=#1}}
+\def\wtkw@syntax@sugar@@b|#1\wtkw@nil{\def\wtkw@member{opt=#1}}
 \def\wtkw@syntax@sugar@b{\@ifnextchar|{\wtkw@syntax@sugar@@b}{\wtkw@not@syntax@sugar}}
 
 %%%% commands for making index
@@ -89,28 +89,34 @@
     {\relax}
     {\edef\wtkw@temp@sup{\wtkw@name@use{wtkw@\wtkw@temp@sup @index}!}}%
   \wtkw@name@xdef{wtkw@id=#1@index}{\wtkw@temp@sup\wtkw@temp@read\wtkw@temp@index}}
-\def\wtkw@index@exe#1{
+\def\wtkw@index@exe#1{%
   \wtkw@if@name@empty{wtkw@temp@opt}
     {\relax}
     {\edef\wtkw@temp@opt{|\wtkw@temp@opt}}%
-  \wtkw@index{\wtkw@name@use{wtkw@id=#1@index}\wtkw@temp@opt}}
+  \wtkw@indexcmd{\wtkw@name@use{wtkw@id=#1@index}\wtkw@temp@opt}}
 
 %%%% command for printing index
 \def\wtkw@print@keyword#1{}
 
 %%%% define main function
 \def\wtkw@keyword#1{%
+  % decide keyword id
+  \wtkw@if@name@empty{wtkw@temp@id}
+    {\def\wtkw@temp@id{#1}}
+    {\relax}%
+  % save/execute index
   \if@wtkw@use@index@
     \if@wtkw@save@index@
-      \wtkw@index@save{#1}%
-      \wtkw@write@aux{#1}%
+      \wtkw@index@save{\wtkw@temp@id}%
+      \wtkw@write@aux{\wtkw@temp@id}%
     \fi
     \if@wtkw@no@index@\else
-      \wtkw@if@id@exist{#1}
-        {\wtkw@index@exe{#1}}
-        {\wtkw@warn@undefined@id{#1}}%
+      \wtkw@if@id@exist{\wtkw@temp@id}
+        {\wtkw@index@exe{\wtkw@temp@id}}
+        {\wtkw@warn@undefined@id{\wtkw@temp@id}}%
     \fi
   \fi
+  % print keyword
   \if@wtkw@phantom\else
     \wtkw@print@keyword{#1}%
   \fi}
@@ -128,8 +134,8 @@
     {\wtkw@keyword}}
 \def\wtkw@keyword@setkeys[#1]{%
   \@for\wtkw@member:=#1\do{%
-    \expandafter\wtkw@syntax@sugar@a\wtkw@member\@nil
-    \expandafter\wtkw@syntax@sugar@b\wtkw@member\@nil
+    \expandafter\wtkw@syntax@sugar@a\wtkw@member\wtkw@nil
+    \expandafter\wtkw@syntax@sugar@b\wtkw@member\wtkw@nil
     \expandafter\wtkw@setkeys@r\expandafter{\wtkw@member}{index@sp,index,style}}
   \wtkw@keyword}
 
@@ -142,8 +148,8 @@
     {\wtkw@keyword}}
 \def\wtkw@phantom@keyword@setkeys[#1]{%
   \@for\wtkw@member:=#1\do{%
-    \expandafter\wtkw@syntax@sugar@a\wtkw@member\@nil
-    \expandafter\wtkw@syntax@sugar@b\wtkw@member\@nil
+    \expandafter\wtkw@syntax@sugar@a\wtkw@member\wtkw@nil
+    \expandafter\wtkw@syntax@sugar@b\wtkw@member\wtkw@nil
     \expandafter\wtkw@setkeys@r\expandafter{\wtkw@member}{index}}
   \wtkw@keyword}
 

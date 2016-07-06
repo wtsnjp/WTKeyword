@@ -14,7 +14,7 @@
 
 %%%% new ifs
 % for package options
-\newif\if@wtkw@use@shortcut@
+%\newif\if@wtkw@use@shortcut@
 \newif\if@wtkw@use@index@
 \newif\if@wtkw@debug@\@wtkw@debug@false
 % for commands
@@ -25,12 +25,13 @@
 \newif\if@wtkw@phantom@
 
 %%%% package options
-\DeclareOption{shortcut}{\@wtkw@use@shortcut@true}
-\DeclareOption{noshortcut}{\@wtkw@use@shortcut@false}
+%\DeclareOption{shortcut}{\@wtkw@use@shortcut@true}
+%\DeclareOption{noshortcut}{\@wtkw@use@shortcut@false}
 \DeclareOption{index}{\@wtkw@use@index@true}
 \DeclareOption{noindex}{\@wtkw@use@index@false}
 \DeclareOption{debug}{\@wtkw@debug@true}
-\ExecuteOptions{index,shortcut}
+\ExecuteOptions{index}
+%\ExecuteOptions{index,shortcut}
 \ProcessOptions\relax
 
 %%%% define utility commands
@@ -144,12 +145,12 @@
 %%%% define \keywordsetup command
 
 %%%% make shortcuts (for shortcut option)
-\if@wtkw@use@shortcut@
-  \let\kw\keyword
-  \let\phantomkw\phantomkeyword
-  \let\setkwstyle\setkeywordstyle
-  \let\kwsetup\keywordsetup
-\fi
+%\if@wtkw@use@shortcut@
+%  \let\kw\keyword
+%  \let\phantomkw\phantomkeyword
+%  \let\setkwstyle\setkeywordstyle
+%  \let\kwsetup\keywordsetup
+%\fi
 
 %%%% warn undefined id (for debug option)
 \def\wtkw@warn@undefined@id#1{%

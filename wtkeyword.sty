@@ -80,12 +80,19 @@
 \def\wtkw@index@save#1{%
   \wtkw@if@name@empty{wtkw@temp@read}
     {\relax}
-    {\wtkw@name@edef\wtkw@temp@read{\wtkw@temp@read @}}%
+    {\edef\wtkw@temp@read{\wtkw@temp@read @}}%
   \wtkw@if@name@empty{wtkw@temp@sup}
     {\relax}
-    {\wtkw@name@edef\wtkw@temp@sup{\wtkw@name@use{wtkw@\wtkw@temp@sup @index}!}}%
+    {\edef\wtkw@temp@sup{\wtkw@name@use{wtkw@\wtkw@temp@sup @index}!}}%
   \wtkw@name@xdef{wtkw@id=#1@index}{\wtkw@temp@sup\wtkw@temp@read\wtkw@temp@index}}
-\def\wtkw@index@exe#1{}
+\def\wtkw@index@exe#1{
+  \wtkw@if@name@empty{wtkw@temp@opt}
+    {\relax}
+    {\edef\wtkw@temp@opt{|\wtkw@temp@opt}}%
+  \wtkw@index{\wtkw@name@use{wtkw@id=#1@index}\wtkw@temp@opt}}
+
+%%%% command for printing index
+\def\wtkw@print@keyword#1{}
 
 %%%% define main function
 \def\wtkw@keyword#1{%

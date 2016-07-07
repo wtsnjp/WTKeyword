@@ -1,0 +1,13 @@
+\documentclass{article}
+
+\usepackage{wtkeyword}
+
+\makeatletter
+
+\newwrite\@dbgfile
+\immediate\openout\@dbgfile=\jobname.dbg
+\def\print#1{\immediate\write\@dbgfile{#1}}
+
+\print{Hello, World!}
+
+\@@end
